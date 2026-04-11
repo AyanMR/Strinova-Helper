@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/resources">
+        <file>icons/notify32.ico</file>
+        <file>icons/app_icon128.ico</file>
+        <file>icons/tray_icon128.png</file>
+        <file>fonts/SourceHanSansSC-Normal.otf</file>
+        <file>templates/bomb_1.png</file>
+        <file>templates/bomb_2.png</file>
+        <file>templates/bomb_3.png</file>
+        <file>templates/plant_bomb.png</file>
+        <file>templates/helping.png</file>
+        <file>templates/defuse_bomb.png</file>
+        <file>templates/defuse_bomb_half.png</file>
+        <file>templates/defuse_bomb_half2.png</file>
+    </qresource>
+</RCC>
