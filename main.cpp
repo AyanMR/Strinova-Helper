@@ -66,26 +66,27 @@ int main(int argc, char *argv[])
                                      "}"
                                     ).arg(fontFamily);
         menu->setStyleSheet(styleSheet);
-        QPointer < settings > st = nullptr;
-        menu->addAction("设置", [&] {
-            if (st.isNull())
-            {
-                st = new settings();
-                st->setAttribute(Qt::WA_DeleteOnClose);
-            }
-            st->show();
-            st->activateWindow();
-            st->raise();
-        });
-        menu->addSeparator();
+        // QPointer < settings > st = nullptr;
+        // menu->addAction("设置", [&] {
+        //     if (st.isNull())
+        //     {
+        //         st = new settings();
+        //         st->setAttribute(Qt::WA_DeleteOnClose);
+        //     }
+        //     st->show();
+        //     st->activateWindow();
+        //     st->raise();
+        // });
+        // menu->addSeparator();
         menu->addAction("退出程序", &a, [] { std::exit(0); });
         tray_icon->setContextMenu(menu);
     }
 
-    auto id                    = std::make_shared < imageDetected >(&a);
-    auto bomb_cw               = std::make_shared < CountdownWindow >();
-    auto plant_cw              = std::make_shared < CountdownWindow >(nullptr, QString("color: rgba(0, 0, 0, 0.7);"));
-    auto defuse_bomb_cw        = std::make_shared < CountdownWindow >(nullptr, QString("color: rgba(0, 0, 0, 0.7);"));
+    auto id             = std::make_shared < imageDetected >(&a);
+    auto bomb_cw        = std::make_shared < CountdownWindow >();
+    auto helping_cw     = std::make_shared < CountdownWindow >(nullptr, QString("color: rgba(0, 0, 0, 0.7);"));
+    auto plant_cw       = std::make_shared < CountdownWindow >(nullptr, QString("color: rgba(0, 0, 0, 0.7);"));
+    auto defuse_bomb_cw = std::make_shared < CountdownWindow >(nullptr, QString("color: rgba(0, 0, 0, 0.7);"));
     QObject::connect(id.get(), &imageDetected::StartBombCountdown, bomb_cw.get(), [&bomb_cw] {
         // qDebug() << "received";
         bomb_cw->set_countdown(50000);
@@ -125,7 +126,19 @@ int main(int argc, char *argv[])
         defuse_bomb_cw->close();
     }, Qt::QueuedConnection);
 
+    QObject::connect(id.get(), &imageDetected::StartHelping, helping_cw.get(), [&helping_cw] {
+        helping_cw->set_countdown(4000);
+        helping_cw->set_position(1790, 1047);
+        helping_cw->show();
+    });
+    QObject::connect(id.get(), &imageDetected::StopHelping, helping_cw.get(), [&helping_cw] {
+        helping_cw->close();
+    });
+
     id->work();
+
+    // webwindow ww;
+    // ww.show();
 
     return QApplication::exec();
 }

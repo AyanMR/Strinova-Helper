@@ -3,8 +3,6 @@
 //
 
 #include "imageDetected.h"
-#include "ThreadPool.h"
-#include "matchScreenRegion.h"
 
 imageDetected::imageDetected(QObject *parent) : QObject(parent), tp(12)
 {
@@ -12,14 +10,8 @@ imageDetected::imageDetected(QObject *parent) : QObject(parent), tp(12)
 
 void imageDetected::work()
 {
-    RECT bomb_rect             = {1258, 146, 1302, 188};
-    RECT plant_bomb_rect       = {1648, 1059, 1781, 1090};
-    RECT helping_rect          = {1649, 1057, 1729, 1088};
-    RECT defuse_bomb_rect      = {1650, 1058, 1781, 1086};
-    RECT defuse_bomb_half_rect = {1649, 1089, 1780, 1109};
-    bool bomb_planted          = false, bomb_planting = false, helping = false, defuse_bomb = false;
 
-    tp.enqueue([bomb_rect, &bomb_planted, this] {
+    tp.enqueue([this] {
         while (!tp.isStop.load(std::memory_order_relaxed))
         {
             if (compareScreenRegionWithImage(false, bomb_rect, ":/resources/templates/bomb_1.png") ||
@@ -42,7 +34,7 @@ void imageDetected::work()
         }
     });
 
-    tp.enqueue([=,&bomb_planting] {
+    tp.enqueue([this] {
         while (!tp.isStop.load(std::memory_order_relaxed))
         {
             if (compareScreenRegionWithImage(false, plant_bomb_rect, ":/resources/templates/plant_bomb.png"))
@@ -62,7 +54,7 @@ void imageDetected::work()
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     });
-    tp.enqueue([=,&helping] {
+    tp.enqueue([this] {
         while (!tp.isStop.load(std::memory_order_relaxed))
         {
             if (compareScreenRegionWithImage(false, helping_rect, ":/resources/templates/helping.png"))
@@ -83,7 +75,7 @@ void imageDetected::work()
         }
     });
 
-    tp.enqueue([=,&defuse_bomb] {
+    tp.enqueue([this] {
         while (!tp.isStop.load(std::memory_order_relaxed))
         {
             if (compareScreenRegionWithImage(false, defuse_bomb_rect, ":/resources/templates/defuse_bomb.png"))
@@ -116,3 +108,4 @@ void imageDetected::work()
 imageDetected::~imageDetected()
 {
 }
+
