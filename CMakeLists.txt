@@ -20,7 +20,7 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
-        WebEngineWidgets
+        Network
         REQUIRED)
 find_package(OpenCV REQUIRED)
 
@@ -38,7 +38,7 @@ target_link_libraries(Strinova_Helper
         Qt::Core
         Qt::Gui
         Qt::Widgets
-#        Qt::WebEngineWidgets
+        Qt::Network
         ${OpenCV_LIBS}
 )
 
@@ -51,7 +51,6 @@ if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
                 COMMAND "${WINDEPLOYQT_EXECUTABLE}"
                 --no-translations
-                --no-plugins
                 "$<TARGET_FILE:${PROJECT_NAME}>"
                 COMMENT "Running windeployqt..."
         )

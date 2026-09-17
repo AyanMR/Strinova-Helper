@@ -6,7 +6,6 @@
 
 #include "countdownwindow.h"
 #include "ui_CountdownWindow.h"
-#include <QFontDatabase>
 #include <chrono>
 
 #include "ThreadPool.h"
@@ -20,29 +19,23 @@ CountdownWindow::CountdownWindow(QWidget *parent, const QString &stylesheet) : Q
     setAttribute(Qt::WA_ShowWithoutActivating);
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowTransparentForInput | Qt::Tool);
 
-    int fontId = QFontDatabase::addApplicationFont(":/resources/fonts/SourceHanSansSC-Normal.otf");
-    if (fontId != -1)
-    {
-        QString fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
-        ui->textEdit->setStyleSheet(QString(
-                                            "QTextEdit {"
-                                            "   font-family: '%1';"
-                                            "   background-color: transparent;"
-                                            "   border: none;"
-                                            "   color: rgba(255, 255, 255, 0.7);"
-                                            + ui_stylesheet +
-                                            "}"
-                                           ).arg(fontFamily));
-        QString currentText = ui->textEdit->toPlainText();
-        ui->textEdit->clear();
+    ui->textEdit->setStyleSheet(QString(
+                                        "QTextEdit {"
+                                        "   background-color: transparent;"
+                                        "   border: none;"
+                                        "   color: rgba(255, 255, 255, 0.7);"
+                                        + ui_stylesheet +
+                                        "}"
+                                       ));
+    const QString currentText = ui->textEdit->toPlainText();
+    ui->textEdit->clear();
 
-        QFont font(fontFamily);
-        font.setPointSize(20);
-        font.setBold(true);
-        ui->textEdit->setFont(font);
-        ui->textEdit->setText(currentText);
-        ui->textEdit->setAlignment(Qt::AlignCenter);
-    }
+    QFont countdownFont = font();
+    countdownFont.setPointSize(20);
+    countdownFont.setBold(true);
+    ui->textEdit->setFont(countdownFont);
+    ui->textEdit->setText(currentText);
+    ui->textEdit->setAlignment(Qt::AlignCenter);
 }
 
 void CountdownWindow::showEvent(QShowEvent *event)

@@ -11,17 +11,22 @@
 
 #include "countdownwindow.h"
 #include "imageDetected.h"
+#include "mainwindow.h"
 #include "settings.h"
 
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QFont        font = a.font();
+    QFont font = a.font();
+    const int fontId = QFontDatabase::addApplicationFont(":/resources/fonts/SourceHanSansSC-Normal.otf");
+    const QStringList fontFamilies = fontId == -1 ? QStringList() : QFontDatabase::applicationFontFamilies(fontId);
+    if (!fontFamilies.isEmpty()) font.setFamily(fontFamilies.first());
     font.setStyleStrategy(QFont::PreferAntialias);
     a.setFont(font);
 
     QApplication::setQuitOnLastWindowClosed(false);
+    auto *mainWindow = new MainWindow();
     if (QSystemTrayIcon::isSystemTrayAvailable())
     {
         auto *  tray_icon = new QSystemTrayIcon(&a);
@@ -32,14 +37,12 @@ int main(int argc, char *argv[])
         QTimer::singleShot(200, tray_icon, [tray_icon] {
             tray_icon->setToolTip("卡丘助手");
         });
-        QMenu *menu = new QMenu();
+        QMenu *menu = new QMenu(mainWindow);
 
         menu->setWindowFlags(Qt::Popup | Qt::FramelessWindowHint | Qt::NoDropShadowWindowHint);
 
         menu->setAttribute(Qt::WA_TranslucentBackground);
 
-        int     fontId     = QFontDatabase::addApplicationFont(":/resources/fonts/SourceHanSansSC-Normal.otf");
-        QString fontFamily = QFontDatabase::applicationFontFamilies(fontId).at(0);
         QString styleSheet = QString(
                                      "QMenu {"
                                      "    background-color: black;"
@@ -64,7 +67,7 @@ int main(int argc, char *argv[])
                                      "    background-color: #333333;"
                                      "    margin: 5px 10px;"
                                      "}"
-                                    ).arg(fontFamily);
+                                     ).arg(font.family());
         menu->setStyleSheet(styleSheet);
         // QPointer < settings > st = nullptr;
         // menu->addAction("设置", [&] {
@@ -77,7 +80,13 @@ int main(int argc, char *argv[])
         //     st->activateWindow();
         //     st->raise();
         // });
-        // menu->addSeparator();
+        menu->addAction("打开查询面板", mainWindow, [mainWindow] {
+            if (mainWindow->isMinimized()) mainWindow->showNormal();
+            else mainWindow->show();
+            mainWindow->raise();
+            mainWindow->activateWindow();
+        });
+        menu->addSeparator();
         menu->addAction("退出程序", &a, [] { std::exit(0); });
         tray_icon->setContextMenu(menu);
     }
@@ -137,8 +146,7 @@ int main(int argc, char *argv[])
 
     id->work();
 
-    // webwindow ww;
-    // ww.show();
+    mainWindow->show();
 
     return QApplication::exec();
 }
